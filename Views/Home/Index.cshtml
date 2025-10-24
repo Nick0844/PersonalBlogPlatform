@@ -1,0 +1,126 @@
+﻿@model IEnumerable<PersonalBlogPlatform.Models.BlogPost>
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to Personal Blog Platform</h1>
+    <p class="lead">Discover stories, thinking, and expertise from writers on any topic.</p>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-8">
+        <h2 class="mb-4">Recent Posts</h2>
+        
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var post in Model)
+            {
+                <div class="card mb-4">
+                    @if (!string.IsNullOrEmpty(post.FeaturedImageUrl))
+                    {
+                        <img src="@post.FeaturedImageUrl" class="card-img-top" alt="@post.Title" style="max-height: 300px; object-fit: cover;">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a asp-controller="BlogPost" asp-action="Details" asp-route-id="@post.Id" class="text-decoration-none text-dark">
+                                @post.Title
+                            </a>
+                        </h5>
+                        <p class="card-text text-muted">
+                            <small>
+                                By @post.Author.FirstName @post.Author.LastName | 
+                                @post.PublishedAt?.ToString("MMMM dd, yyyy") |
+                                @post.ViewCount views
+                            </small>
+                        </p>
+                        <p class="card-text">@post.Summary</p>
+                        <div class="mb-2">
+                            @if (post.Category != null)
+                            {
+                                <span class="badge bg-primary">@post.Category.Name</span>
+                            }
+                            @if (post.BlogPostTags != null)
+                            {
+                                @foreach (var tag in post.BlogPostTags.Take(3))
+                                {
+                                    <span class="badge bg-secondary">@tag.Tag.Name</span>
+                                }
+                            }
+                        </div>
+                        <a asp-controller="BlogPost" asp-action="Details" asp-route-id="@post.Id" class="btn btn-primary">Read More</a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <h4>No blog posts yet</h4>
+                <p>Be the first to create a blog post!</p>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a asp-controller="BlogPost" asp-action="Create" class="btn btn-success">Create Your First Post</a>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Login</a>
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-secondary">Register</a>
+                }
+            </div>
+        }
+        
+        @if (Model != null && Model.Any())
+        {
+            <div class="text-center mt-4">
+                <a asp-controller="BlogPost" asp-action="Index" class="btn btn-outline-primary">View All Posts</a>
+            </div>
+        }
+    </div>
+    
+    <div class="col-md-4">
+        <h4 class="mb-3">Categories</h4>
+        <div class="list-group mb-4">
+            @if (ViewBag.Categories != null && ViewBag.Categories.Count > 0)
+            {
+                @foreach (var category in ViewBag.Categories)
+                {
+                    <a asp-controller="BlogPost" asp-action="Index" asp-route-categoryId="@category.Id" 
+                       class="list-group-item list-group-item-action">
+                        @category.Name
+                    </a>
+                }
+            }
+            else
+            {
+                <div class="list-group-item">
+                    <em>No categories available</em>
+                </div>
+            }
+        </div>
+        
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Create Content</h5>
+                    <p class="card-text">Share your stories with the world.</p>
+                    <a asp-controller="BlogPost" asp-action="Create" class="btn btn-success w-100 mb-2">New Post</a>
+                    <a asp-controller="BlogPost" asp-action="MyPosts" class="btn btn-outline-primary w-100">My Posts</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Join Our Community</h5>
+                    <p class="card-text">Sign up to write and read blog posts.</p>
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary w-100 mb-2">Register</a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary w-100">Login</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>

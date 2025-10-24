@@ -1,0 +1,105 @@
+@model IEnumerable<PersonalBlogPlatform.Models.BlogPost>
+
+@{
+    ViewData["Title"] = "All Blog Posts";
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1 class="display-4">All Blog Posts</h1>
+        
+        <form asp-action="Index" method="get" class="row g-3 mt-3">
+            <div class="col-md-4">
+                <select name="categoryId" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    @if (ViewBag.Categories != null)
+                    {
+                        @foreach (var category in ViewBag.Categories)
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <input type="text" name="search" class="form-control" placeholder="Search posts...">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    @if (Model.Any())
+    {
+        @foreach (var post in Model)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(post.FeaturedImageUrl))
+                    {
+                        <img src="@post.FeaturedImageUrl" class="card-img-top" alt="@post.Title" style="height: 200px; object-fit: cover;">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a asp-action="Details" asp-route-id="@post.Id" class="text-decoration-none text-dark">
+                                @post.Title
+                            </a>
+                        </h5>
+                        <p class="card-text text-muted">
+                            <small>
+                                By @post.Author.FirstName @post.Author.LastName | 
+                                @post.PublishedAt?.ToString("MMM dd, yyyy")
+                            </small>
+                        </p>
+                        <p class="card-text">@post.Summary</p>
+                        <div class="mb-2">
+                            @if (post.Category != null)
+                            {
+                                <span class="badge bg-primary">@post.Category.Name</span>
+                            }
+                            @foreach (var tag in post.BlogPostTags.Take(3))
+                            {
+                                <span class="badge bg-secondary">@tag.Tag.Name</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a asp-action="Details" asp-route-id="@post.Id" class="btn btn-sm btn-outline-primary">Read More</a>
+                        <span class="text-muted float-end">
+                            <small>@post.ViewCount views | @post.Comments.Count comments</small>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h4>No posts found</h4>
+                <p>There are no blog posts matching your criteria.</p>
+            </div>
+        </div>
+    }
+</div>
+
+@if (ViewBag.Tags != null && ViewBag.Tags.Count > 0)
+{
+    <div class="row mt-4">
+        <div class="col-12">
+            <h4>Popular Tags</h4>
+            <div class="mt-2">
+                @foreach (var tag in ViewBag.Tags)
+                {
+                    <a asp-action="Index" asp-route-tag="@tag.Slug" class="badge bg-secondary me-2 mb-2 text-decoration-none">
+                        @tag.Name
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+}

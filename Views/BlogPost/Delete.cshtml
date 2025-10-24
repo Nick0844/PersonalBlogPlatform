@@ -1,0 +1,46 @@
+@model PersonalBlogPlatform.Models.BlogPost
+
+@{
+    ViewData["Title"] = "Delete Post";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2 class="text-danger mb-4">Delete Post</h2>
+        
+        <div class="alert alert-warning">
+            <h4>Are you sure you want to delete this post?</h4>
+            <p>This action cannot be undone.</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">@Model.Title</h4>
+                <p class="card-text">@Model.Summary</p>
+                
+                <dl class="row mt-3">
+                    <dt class="col-sm-3">Author</dt>
+                    <dd class="col-sm-9">@Model.Author.FirstName @Model.Author.LastName</dd>
+                    
+                    <dt class="col-sm-3">Category</dt>
+                    <dd class="col-sm-9">@(Model.Category?.Name ?? "None")</dd>
+                    
+                    <dt class="col-sm-3">Created</dt>
+                    <dd class="col-sm-9">@Model.CreatedAt.ToString("MMMM dd, yyyy")</dd>
+                    
+                    <dt class="col-sm-3">Views</dt>
+                    <dd class="col-sm-9">@Model.ViewCount</dd>
+                    
+                    <dt class="col-sm-3">Comments</dt>
+                    <dd class="col-sm-9">@Model.Comments.Count</dd>
+                </dl>
+            </div>
+        </div>
+        
+        <form asp-action="Delete" method="post" class="mt-4">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

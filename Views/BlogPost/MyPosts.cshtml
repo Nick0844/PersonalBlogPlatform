@@ -1,0 +1,96 @@
+@model IEnumerable<PersonalBlogPlatform.Models.BlogPost>
+
+@{
+    ViewData["Title"] = "My Posts";
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="display-4">My Blog Posts</h1>
+            <a asp-action="Create" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> New Post
+            </a>
+        </div>
+        <p class="text-muted">Manage all your blog posts in one place</p>
+    </div>
+</div>
+
+<div class="row">
+    @if (Model != null && Model.Any())
+    {
+        @foreach (var post in Model)
+        {
+            <div class="col-md-12 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-2">
+                                @if (!string.IsNullOrEmpty(post.FeaturedImageUrl))
+                                {
+                                    <img src="@post.FeaturedImageUrl" class="img-fluid rounded" alt="@post.Title" style="height: 100px; width: 100%; object-fit: cover;">
+                                }
+                                else
+                                {
+                                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded" style="height: 100px;">
+                                        <span>No Image</span>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-7">
+                                <h5 class="card-title mb-2">
+                                    <a asp-action="Details" asp-route-id="@post.Id" class="text-decoration-none text-dark">
+                                        @post.Title
+                                    </a>
+                                    @if (!post.IsPublished)
+                                    {
+                                        <span class="badge bg-warning text-dark">Draft</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Published</span>
+                                    }
+                                </h5>
+                                <p class="card-text text-muted mb-2">
+                                    <small>
+                                        Created: @post.CreatedAt.ToString("MMM dd, yyyy") | 
+                                        @post.ViewCount views | 
+                                        @post.Comments.Count comments
+                                    </small>
+                                </p>
+                                <p class="card-text">@post.Summary.Substring(0, Math.Min(100, post.Summary.Length))...</p>
+                                <div>
+                                    @if (post.Category != null)
+                                    {
+                                        <span class="badge bg-primary">@post.Category.Name</span>
+                                    }
+                                    @foreach (var tag in post.BlogPostTags.Take(3))
+                                    {
+                                        <span class="badge bg-secondary">@tag.Tag.Name</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-center justify-content-end">
+                                <div class="btn-group-vertical" role="group">
+                                    <a asp-action="Details" asp-route-id="@post.Id" class="btn btn-sm btn-outline-primary mb-1">View</a>
+                                    <a asp-action="Edit" asp-route-id="@post.Id" class="btn btn-sm btn-outline-warning mb-1">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@post.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <h4>You haven't created any posts yet</h4>
+                <p>Start sharing your thoughts with the world!</p>
+                <a asp-action="Create" class="btn btn-success">Create Your First Post</a>
+            </div>
+        </div>
+    }
+</div>
